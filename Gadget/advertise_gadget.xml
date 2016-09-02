@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+<ModulePrefs title="GweOne Adsvertisement" height="10" description="Manage your adsvertisement" author="GweOne.com" title_url="http://www.GweOne.com">
+  <Require feature="dynamic-height"/>
+ </ModulePrefs>
+<UserPref
+    name="ads_image_url"
+    display_name="Ads Image Url"
+    required="true" />
+<UserPref
+    name="ads_link_url"
+    display_name="Ads Link Url"
+    required="true" />
+<UserPref
+    name="ads_default_image_url"
+    display_name="Default Image Url (If expired, Leave blank for hide)"
+	default_value ="http://jhncode.googlecode.com/svn/trunk/Ads/advertise-here.jpg"
+    required="false" />
+<UserPref
+    name="ads_default_link_url"
+    display_name="Default Link Url (If expired, Leave blank for hide)"
+	default_value="http://www.gweone.com/p/advertise-here.html"
+    required="false" />
+<UserPref
+    name="ads_type"
+    display_name="Ads Type"
+    required="true" datatype="enum" default_value="720x90">
+    <EnumValue value="720x90" display_value="Leaderboard - ( 728 x 90 )"/>
+    <EnumValue value="160x600" display_value="Wide Skyscraper - ( 160 x 600 )"/>
+    <EnumValue value="250x250" display_value="Square Box - ( 250 x 250 )"/>
+	<EnumValue value="220x600" display_value="Large Skyscraper - ( 220 x 600 )"/>
+</UserPref>
+<UserPref
+    name="ads_start"
+    display_name="Start Date, Use format YYYY-MM-DD (Leave blank for current date)"
+	datatype="date"
+	default_value ="2014-06-27"
+    required="false" />
+<UserPref
+    name="ads_expire"
+    display_name="Expire Date, Use format YYYY-MM-DD (Leave blank for unlimited)"
+	datatype="date"
+	default_value ="2014-06-28"
+    required="false" />
+ <Content type="html">
+   <![CDATA[
+	<div id="AdsGweOne" style="width:100%; height:100%;text-align: center;">		
+		<a id="AdsGweOne_result" target="_blank" href="http://www.GweOne.com">
+			<img id="AdsGweOne_image" src="" alt="Powered by www.GweOne.com | Advertise Network" />
+		</a>
+	</div>
+   <script type="text/javascript">
+	 // setup variables
+	 var prefs = new gadgets.Prefs();
+	 
+	 function onRender(){
+	    var today = new Date();		
+	    if(prefs.getString('ads_expire') == ''){
+			if(prefs.getString('ads_start') == ''){
+				createGweOneAds();
+			}
+			else{
+				var start = new Date(prefs.getString('ads_start'));
+				if(start > today)
+					setDefaultView();
+				else 
+					createGweOneAds();
+			}
+		}
+		else {
+			var expire = new Date(prefs.getString('ads_expire'));
+			if(prefs.getString('ads_start') == ''){
+				createGweOneAds();
+			}
+			else {
+				var start = new Date(prefs.getString('ads_start'));
+				if(expire < today || start > today ){
+					setDefaultView();
+				}
+				else{
+					createGweOneAds();
+				}
+			}			
+		}
+		
+		gadgets.window.adjustHeight();
+	 }
+	 
+	 function setDefaultView(){
+		if(prefs.getString('ads_default_image_url') == ''){
+			document.getElementById('AdsGweOne').innerHTML = '';
+		}
+		else{
+			createDefaultGweOneAds();
+		}
+	 }
+	 
+	 function setSize(image){
+		var width = "720px";
+		var height = "90px";
+		
+		switch(prefs.getString('ads_type')){
+		    case "720x90":
+			  width = "720px";
+			  height = "90px";
+			  break;
+			case "160x600":
+			  width = "160px";
+			  height = "600px";
+			  break;
+			case "250x250":
+			  width = "250px";
+			  height = "250px";
+			  break;
+			case "220x600":
+			  width = "220px";
+			  height = "600px";
+			  break;
+			default:
+			  break;
+		}
+		
+		var img_style =  "width:" + width + ";max-width:" + width + ";height:" + height + ";max-height:" + height ;
+		image.setAttribute("style", img_style)
+	 }
+	 
+	 function createGweOneAds()
+	 {
+		var image = document.getElementById('AdsGweOne_image');
+		image.src = unescape(prefs.getString('ads_image_url'));		
+		setSize(image);
+		
+		var link = document.getElementById('AdsGweOne_result');
+		link.href = unescape(prefs.getString('ads_link_url'));
+	 }
+	 
+	 function createDefaultGweOneAds()
+	 {
+		var image = document.getElementById('AdsGweOne_image');
+		image.src = unescape(prefs.getString('ads_default_image_url'));
+		setSize(image);
+		
+		var link = document.getElementById('AdsGweOne_result');
+		if(prefs.getString('ads_default_link_url') != '')
+			link.href = unescape(prefs.getString('ads_default_link_url'));
+	 }
+     gadgets.util.registerOnLoadHandler(onRender); 
+   </script>
+  ]]>
+
+  </Content>
+</Module>
